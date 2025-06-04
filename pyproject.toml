@@ -1,0 +1,22 @@
+[project]
+name = "quiz-prep"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Abdullah-1121", email = "muhmmad11abdullah21@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "langsmith[openai-agents]>=0.3.44",
+    "openai-agents>=0.0.16",
+    "python-dotenv>=1.1.0",
+]
+
+[project.scripts]
+quiz-prep = "quiz_prep:main"
+main = "quiz_prep.main:run_agent"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
