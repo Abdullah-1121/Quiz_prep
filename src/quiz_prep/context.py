@@ -147,6 +147,7 @@ async def check_output(context: RunContextWrapper[TravelerInfo] , agent : Agent 
     return GuardrailFunctionOutput(
         output_info=result.final_output,
         tripwire_triggered=result.final_output.is_not_professional
+
     )
 
 #  Run Hooks for the workflow
@@ -195,9 +196,10 @@ Flight_Booking_agent = Agent[TravelerInfo](
     tools=[Book_Flight_tool],
     input_guardrails=[check_israel],
     # output_guardrails=[check_output],
-    # model_settings=ModelSettings(
-    #     tool_choice="required",
-    # )
+    model_settings=ModelSettings(
+        # tool_choice="required",
+        temperature=0.2,
+    )
     # hooks=travel_agent_hooks,
 )
 
@@ -208,9 +210,10 @@ Weather_agent = Agent(
     tools=[get_weather],
     # input_guardrails=[check_israel],
     # output_guardrails=[check_output],
-    # model_settings=ModelSettings(
-    #     tool_choice="required",
-    # )
+    model_settings=ModelSettings(
+        # tool_choice="required",
+        temperature=0.2,
+    )
     # hooks=travel_agent_hooks,
 )
 triage_agent = Agent(
@@ -222,6 +225,10 @@ triage_agent = Agent(
     model = model,
     input_guardrails=[check_israel],
     # output_guardrails=[check_output],
+    model_settings=ModelSettings(
+        # tool_choice="required",
+        temperature=0.2,
+    ),
 )
 class HandoffData(BaseModel):
     reason : str

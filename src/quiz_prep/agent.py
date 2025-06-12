@@ -1,5 +1,5 @@
 import os
-from agents import Agent, AgentOutputSchema, ItemHelpers, Runner, AsyncOpenAI, OpenAIChatCompletionsModel , handoff,Handoff,function_tool , AgentOutputSchemaBase, set_trace_processors , RunContextWrapper
+from agents import Agent, AgentOutputSchema, ItemHelpers, ModelSettings, Runner, AsyncOpenAI, OpenAIChatCompletionsModel , handoff,Handoff,function_tool , AgentOutputSchemaBase, set_trace_processors , RunContextWrapper
 from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX , prompt_with_handoff_instructions
 from agents.run import RunConfig
 from dotenv import load_dotenv
@@ -53,36 +53,55 @@ def get_weather(city: str) -> str:
     """
     # In real life, we'd fetch the weather from a weather API
     return f"The weather in {city} is sunny" 
-
-class HandoffData(BaseModel):
-    reason : str
-async def on_handoffs(ctx : RunContextWrapper[None] , input_data :HandoffData  ):
-    print(f"Handoff Reason: {input_data.reason} ")
-Technical_Support_Agent = Agent(
-    name = "Technical Support Agent",
-    instructions=f'''{RECOMMENDED_PROMPT_PREFIX}You are a technical support agent. You can assist with technical inquiries. ''',
-    model = model ,
-    handoff_description='Handles technical inquiries and can transfer to other agents if needed.'
-)
-Billing_Support_Agent = Agent(
-    name='Billing Support Agent',
-    instructions=f'''{RECOMMENDED_PROMPT_PREFIX}You are a billing support agent. You can assist with billing inquiries. ''',
-    model=model,
-    handoff_description='Handles billing inquiries and can transfer to other agents if needed.'
-)  
-
+@function_tool
+def book_flight(city : str) ->str:
+    '''
+    Books the Flight for the Given city
+    Args:
+        city : str
+    '''
+    return f'''Your flight to {city} has been booked.'''
 basic_agent = Agent(
     name='Personal Assistant',
-    instructions=f'''{RECOMMENDED_PROMPT_PREFIX}You are a Customer Support Agent that handles general inquiries ,' \
-    'and If the query is related to the technical issues, Transfer  to the Technical Support Agent, and if the query is related to billing issues,Transfer to the Billing Support Agent.''',
-    model=model,
-    tools=[get_weather],
-    # output_type=Jokes
+    instructions='You are a personal assistant , You book the flight to the destination and tell the weather using tools given to you .',
+    tools = [get_weather, book_flight],
+    model=model , 
+    model_settings=ModelSettings(
+        temperature=0.2,
+        parallel_tool_calls=True,
+        tool_choice="required"
+    )
+    
 )
-basic_agent.handoffs = [
-    handoff(agent=Technical_Support_Agent, on_handoff=on_handoffs, input_type=HandoffData ),
-    handoff(agent=Billing_Support_Agent, on_handoff=on_handoffs, input_type=HandoffData , 
-            input_filter=handoff_filters.remove_all_tools ),]
+# class HandoffData(BaseModel):
+#     reason : str
+# async def on_handoffs(ctx : RunContextWrapper[None] , input_data :HandoffData  ):
+#     print(f"Handoff Reason: {input_data.reason} ")
+# Technical_Support_Agent = Agent(
+#     name = "Technical Support Agent",
+#     instructions=f'''{RECOMMENDED_PROMPT_PREFIX}You are a technical support agent. You can assist with technical inquiries. ''',
+#     model = model ,
+#     handoff_description='Handles technical inquiries and can transfer to other agents if needed.'
+# )
+# Billing_Support_Agent = Agent(
+#     name='Billing Support Agent',
+#     instructions=f'''{RECOMMENDED_PROMPT_PREFIX}You are a billing support agent. You can assist with billing inquiries. ''',
+#     model=model,
+#     handoff_description='Handles billing inquiries and can transfer to other agents if needed.'
+# )  
+
+# basic_agent = Agent(
+#     name='Personal Assistant',
+#     instructions=f'''{RECOMMENDED_PROMPT_PREFIX}You are a Customer Support Agent that handles general inquiries ,' \
+#     'and If the query is related to the technical issues, Transfer  to the Technical Support Agent, and if the query is related to billing issues,Transfer to the Billing Support Agent.''',
+#     model=model,
+#     tools=[get_weather],
+#     # output_type=Jokes
+# )
+# basic_agent.handoffs = [
+#     handoff(agent=Technical_Support_Agent, on_handoff=on_handoffs, input_type=HandoffData ),
+#     handoff(agent=Billing_Support_Agent, on_handoff=on_handoffs, input_type=HandoffData , 
+#             input_filter=handoff_filters.remove_all_tools ),]
 
 
 
