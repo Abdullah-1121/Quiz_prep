@@ -136,6 +136,15 @@ wheels = [
 ]
 
 [[package]]
+name = "graphviz"
+version = "0.20.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/fa/83/5a40d19b8347f017e417710907f824915fba411a9befd092e52746b63e9f/graphviz-0.20.3.zip", hash = "sha256:09d6bc81e6a9fa392e7ba52135a9d49f1ed62526f96499325930e87ca1b5925d", size = 256455 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/00/be/d59db2d1d52697c6adc9eacaf50e8965b6345cc143f671e1ed068818d5cf/graphviz-0.20.3-py3-none-any.whl", hash = "sha256:81f848f2904515d8cd359cc611faba817598d2feaac4027b266aa3eda7b3dde5", size = 47126 },
+]
+
+[[package]]
 name = "griffe"
 version = "1.7.3"
 source = { registry = "https://pypi.org/simple" }
@@ -330,6 +339,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/46/98/6f328d0f262c3c1452889203ed825aa4f1022bb1e2b1df9e1b400301ce15/openai_agents-0.0.16-py3-none-any.whl", hash = "sha256:e2bac96424162247a21d8bb8b3e2c61dc8eb2e795dd03b640cb346b7869578ac", size = 120232 },
 ]
 
+[package.optional-dependencies]
+viz = [
+    { name = "graphviz" },
+]
+
 [[package]]
 name = "orjson"
 version = "3.10.18"
@@ -481,14 +495,14 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "langsmith", extra = ["openai-agents"] },
-    { name = "openai-agents" },
+    { name = "openai-agents", extra = ["viz"] },
     { name = "python-dotenv" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "langsmith", extras = ["openai-agents"], specifier = ">=0.3.44" },
-    { name = "openai-agents", specifier = ">=0.0.16" },
+    { name = "openai-agents", extras = ["viz"], specifier = ">=0.0.16" },
     { name = "python-dotenv", specifier = ">=1.1.0" },
 ]
 

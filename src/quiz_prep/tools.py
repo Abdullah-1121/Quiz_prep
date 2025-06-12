@@ -33,7 +33,7 @@ config = RunConfig(
     model_provider=external_client,
     tracing_disabled=True
 )
-@function_tool(name_override="Read_File")
+@function_tool(name_override="Read_File" )
 def get_data(Context :RunContextWrapper[Any] , path: str , directory : str = None ) -> str:
     """Reads the contents of a file.
 
